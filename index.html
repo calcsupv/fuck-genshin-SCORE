@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <title>原神 聖遺物スコア計算（全部位対応）</title>
+    <style>
+        .good-main {
+            color: #4CAF50;
+            font-weight: bold;
+        }
+
+        .bad-main {
+            color: #F44336;
+        }
+
+        .grade-SS {
+            color: #FFD700;
+            font-weight: bold;
+        }
+
+        .grade-S {
+            color: #FF9800;
+            font-weight: bold;
+        }
+
+        .grade-A {
+            color: #4CAF50;
+        }
+
+        .grade-B {
+            color: #2196F3;
+        }
+
+        .grade-C {
+            color: #9E9E9E;
+        }
+
+        .grade-D {
+            color: #795548;
+        }
+
+        .rainbow {
+            font-weight: bold;
+            font-size: 40px;
+            background: linear-gradient(90deg, red, orange, yellow, green, blue, indigo, violet, red);
+            -webkit-background-clip: text;
+            color: transparent;
+            background-size: 400%;
+            animation: rainbowMove 0.001s linear infinite;
+        }
+
+        @keyframes rainbowMove {
+            0% {
+                background-position: 0%;
+            }
+
+            100% {
+                background-position: 100%;
+            }
+        }
+
+        .good-main {
+            color: #ff0000;
+            font-weight: bold;
+        }
+
+        .busu-message {
+            color: #ff0000;
+            font-weight: bold;
+            font-size: 99px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>聖遺物スコア計算ツール（全部位対応）</h1>
+
+    <label>キャラタイプ:
+        <select id="type">
+            <option value="crit" selected>会心率/ダメージ型</option>
+            <option value="charge">元素チャージ効率型</option>
+            <option value="def">防御型</option>
+            <option value="hp">HP型</option>
+            <option value="em">元素熟知型</option>
+        </select>
+    </label>
+    <br><br>
+
+    <h3>メインステータス</h3>
+    <label>部位:
+        <select id="mainSlot">
+            <option value="flower">花</option>
+            <option value="plume">羽</option>
+            <option value="clock" selected>時計</option>
+            <option value="cup">杯</option>
+            <option value="crown">冠</option>
+        </select>
+    </label>
+    <br><br>
+
+    <label>メインステータスの種類:
+        <select id="mainStatType">
+            <option value="hp">HP（固定）</option>
+            <option value="atk">攻撃力（固定）</option>
+            <option value="hpPercent" selected>HP%</option>
+            <option value="atkPercent">攻撃力%</option>
+            <option value="defPercent">防御力%</option>
+            <option value="elemental">元素ダメージ%</option>
+            <option value="physical">物理ダメージ%</option>
+            <option value="em">元素熟知</option>
+            <option value="er">元素チャージ効率%</option>
+            <option value="critRate">会心率%</option>
+            <option value="critDmg">会心ダメージ%</option>
+            <option value="healing">与える治療効果%</option>
+        </select>
+    </label>
+    <br><br>
+
+    <label>メインステータス値: <input type="number" id="mainValue" value="46.6" step="0.1"></label>
+    <br><br>
+
+    <h3>サブステータス (最大4個まで)</h3>
+    <div id="subStats">
+        <label>サブ1: <input type="number" id="sub1" value="0" step="0.1"> </label>
+        <select id="sub1type">
+            <option value="critRate">会心率%</option>
+            <option value="critDmg">会心ダメージ%</option>
+            <option value="atkPercent" selected>攻撃力%</option>
+            <option value="defPercent">防御力%</option>
+            <option value="hpPercent">HP%</option>
+            <option value="erPercent">元素チャージ効率%</option>
+            <option value="em">元素熟知</option>
+            <option value="atk">攻撃力（固定）</option>
+            <option value="def">防御力（固定）</option>
+            <option value="hp">HP（固定）</option>
+        </select><br>
+
+        <label>サブ2: <input type="number" id="sub2" value="0" step="0.1"> </label>
+        <select id="sub2type">
+            <option value="critRate">会心率%</option>
+            <option value="critDmg">会心ダメージ%</option>
+            <option value="atkPercent">攻撃力%</option>
+            <option value="defPercent">防御力%</option>
+            <option value="hpPercent">HP%</option>
+            <option value="erPercent">元素チャージ効率%</option>
+            <option value="em">元素熟知</option>
+            <option value="atk">攻撃力（固定）</option>
+            <option value="def">防御力（固定）</option>
+            <option value="hp" selected>HP（固定）</option>
+        </select><br>
+
+        <label>サブ3: <input type="number" id="sub3" value="0" step="0.1"> </label>
+        <select id="sub3type">
+            <option value="critRate">会心率%</option>
+            <option value="critDmg">会心ダメージ%</option>
+            <option value="atkPercent">攻撃力%</option>
+            <option value="defPercent">防御力%</option>
+            <option value="hpPercent">HP%</option>
+            <option value="erPercent">元素チャージ効率%</option>
+            <option value="em" selected>元素熟知</option>
+            <option value="atk">攻撃力（固定）</option>
+            <option value="def">防御力（固定）</option>
+            <option value="hp">HP（固定）</option>
+        </select><br>
+
+        <label>サブ4: <input type="number" id="sub4" value="0" step="0.1"> </label>
+        <select id="sub4type">
+            <option value="critRate">会心率%</option>
+            <option value="critDmg">会心ダメージ%</option>
+            <option value="atkPercent">攻撃力%</option>
+            <option value="defPercent" selected>防御力%</option>
+            <option value="hpPercent">HP%</option>
+            <option value="erPercent">元素チャージ効率%</option>
+            <option value="em">元素熟知</option>
+            <option value="atk">攻撃力（固定）</option>
+            <option value="def">防御力（固定）</option>
+            <option value="hp">HP（固定）</option>
+        </select><br>
+    </div>
+    <br>
+
+    <button onclick="calculateScore()">スコア計算</button>
+
+    <h2 id="result"></h2>
+    <div id="details"></div>
+
+    <script>
+        const maxSubStats = {
+            'critRate': 3.9,
+            'critDmg': 7.8,
+            'atkPercent': 5.8,
+            'defPercent': 7.3,
+            'hpPercent': 5.8,
+            'erPercent': 6.5,
+            'em': 23,
+            'atk': 19,
+            'def': 23,
+            'hp': 299
+        };
+
+        const maxMainStats = {
+            'flower': { 'hp': 4780 },
+            'plume': { 'atk': 311 },
+            'clock': {
+                'hpPercent': 46.6,
+                'atkPercent': 46.6,
+                'defPercent': 58.3,
+                'em': 187,
+                'erPercent': 51.8
+            },
+            'cup': {
+                'hpPercent': 46.6,
+                'atkPercent': 46.6,
+                'defPercent': 58.3,
+                'elemental': 46.6,
+                'physical': 58.3
+            },
+            'crown': {
+                'hpPercent': 46.6,
+                'atkPercent': 46.6,
+                'defPercent': 58.3,
+                'em': 187,
+                'critRate': 31.1,
+                'critDmg': 62.2,
+                'healing': 35.9
+            }
+        };
+
+        const optimalMainStats = {
+            'crit': {
+                'clock': ['atkPercent', 'erPercent'],
+                'cup': ['elemental', 'physical'],
+                'crown': ['critRate', 'critDmg']
+            },
+            'charge': {
+                'clock': ['erPercent'],
+                'cup': ['elemental'],
+                'crown': ['critRate', 'critDmg']
+            },
+            'def': {
+                'clock': ['defPercent'],
+                'cup': ['elemental', 'defPercent'],
+                'crown': ['defPercent', 'critRate', 'critDmg']
+            },
+            'hp': {
+                'clock': ['hpPercent'],
+                'cup': ['elemental', 'hpPercent'],
+                'crown': ['hpPercent', 'critRate', 'critDmg']
+            },
+            'em': {
+                'clock': ['em'],
+                'cup': ['elemental', 'em'],
+                'crown': ['em']
+            }
+        };
+
+        function calculateScore() {
+            const type = document.getElementById('type').value;
+            const slot = document.getElementById('mainSlot').value;
+            const mainStatType = document.getElementById('mainStatType').value;
+            let mainValue = parseFloat(document.getElementById('mainValue').value);
+            let mainScore = 0;
+            let mainEvaluation = '';
+            let mainClass = '';
+            if (slot !== 'flower' && slot !== 'plume') {
+                const optimalStats = optimalMainStats[type]?.[slot] || [];
+                const isOptimal = optimalStats.includes(mainStatType);
+                if (isOptimal) {
+                    const maxValue = maxMainStats[slot][mainStatType] || 0;
+                    if (maxValue > 0) {
+                        mainScore = (mainValue / maxValue) * 20;
+                        mainEvaluation = `最適なメインステータス (${(mainValue / maxValue * 100).toFixed(1)}%)`;
+                        mainClass = 'good-main';
+                    }
+                } else {
+                    mainScore = 0;
+                    mainEvaluation = '最適なメインステータスではありません';
+                    mainClass = 'bad-main';
+                }
+            } else {
+                mainScore = 20;
+                mainEvaluation = '花/羽は固定値のため標準評価';
+            }
+
+            let subs = [];
+            for (let i = 1; i <= 4; i++) {
+                const val = parseFloat(document.getElementById('sub' + i).value);
+                const stype = document.getElementById('sub' + i + 'type').value;
+                if (!isNaN(val) && val > 0) {
+                    subs.push({ val, type: stype });
+                }
+            }
+
+            let subScore = 0;
+            let subDetails = [];
+            subs.forEach(s => {
+                const maxVal = maxSubStats[s.type] || 1;
+                let scoreContribution = 0;
+                let statName = '';
+                let efficiency = (s.val / maxVal * 100).toFixed(1);
+
+                switch (type) {
+                    case 'crit':
+                        switch (s.type) {
+                            case 'atkPercent':
+                                scoreContribution = s.val;
+                                statName = '攻撃力%';
+                                break;
+                            case 'critRate':
+                                scoreContribution = s.val * 2;
+                                statName = '会心率%';
+                                break;
+                            case 'critDmg':
+                                scoreContribution = s.val;
+                                statName = '会心ダメージ%';
+                                break;
+                            case 'erPercent':
+                                scoreContribution = s.val * 0.8;
+                                statName = '元素チャージ効率%';
+                                break;
+                            case 'em':
+                                scoreContribution = s.val * 0.25;
+                                statName = '元素熟知';
+                                break;
+                            default:
+                                scoreContribution = 0;
+                                statName = s.type;
+                                efficiency = '0.0';
+                        }
+                        break;
+
+                    case 'em':
+                        switch (s.type) {
+                            case 'em':
+                                scoreContribution = s.val * 0.25;
+                                statName = '元素熟知';
+                                break;
+                            case 'critRate':
+                                scoreContribution = s.val * 2;
+                                statName = '会心率%';
+                                break;
+                            case 'critDmg':
+                                scoreContribution = s.val;
+                                statName = '会心ダメージ%';
+                                break;
+                            default:
+                                scoreContribution = 0;
+                                statName = s.type;
+                                efficiency = '0.0';
+                        }
+                        break;
+
+                    case 'def':
+                        switch (s.type) {
+                            case 'defPercent':
+                                scoreContribution = s.val;
+                                statName = '防御力%';
+                                break;
+                            case 'critRate':
+                                scoreContribution = s.val * 2;
+                                statName = '会心率%';
+                                break;
+                            case 'critDmg':
+                                scoreContribution = s.val;
+                                statName = '会心ダメージ%';
+                                break;
+                            default:
+                                scoreContribution = 0;
+                                statName = s.type;
+                                efficiency = '0.0';
+                        }
+                        break;
+
+                    case 'charge':
+                        switch (s.type) {
+                            case 'erPercent':
+                                scoreContribution = s.val;
+                                statName = '元素チャージ効率%';
+                                break;
+                            case 'critRate':
+                                scoreContribution = s.val * 2;
+                                statName = '会心率%';
+                                break;
+                            case 'critDmg':
+                                scoreContribution = s.val;
+                                statName = '会心ダメージ%';
+                                break;
+                            default:
+                                scoreContribution = 0;
+                                statName = s.type;
+                                efficiency = '0.0';
+                        }
+                        break;
+
+                    case 'hp':
+                        switch (s.type) {
+                            case 'hpPercent':
+                                scoreContribution = s.val;
+                                statName = 'HP%';
+                                break;
+                            case 'critRate':
+                                scoreContribution = s.val * 2;
+                                statName = '会心率%';
+                                break;
+                            case 'critDmg':
+                                scoreContribution = s.val;
+                                statName = '会心ダメージ%';
+                                break;
+                            default:
+                                scoreContribution = 0;
+                                statName = s.type;
+                                efficiency = '0.0';
+                        }
+                        break;
+                }
+
+                subScore += scoreContribution;
+
+                if (scoreContribution > 0) {
+                    subDetails.push({
+                        name: statName,
+                        value: s.val,
+                        max: maxVal,
+                        score: scoreContribution,
+                        efficiency: efficiency
+                    });
+                }
+            });
+
+            const totalScore = Math.round((mainScore + subScore) * 10) / 10;
+
+            let comment = '';
+            let grade = '';
+            let gradeClass = '';
+            let commentClass = '';
+
+            if (totalScore >= 999) {
+                comment = 'ブス適当に入力するな（通報）';
+                grade = 'SS';
+                gradeClass = 'rainbow';
+                commentClass = 'busu-message';
+            } else if (totalScore >= 50) {
+                comment = '神GOD聖遺物（自慢レベル）';
+                grade = 'SS';
+                gradeClass = 'rainbow';
+                commentClass = '';
+            } else if (totalScore >= 40) {
+                comment = '超優秀（絶対に手放すな）';
+                grade = 'S';
+                gradeClass = 'grade-S';
+                commentClass = '';
+            } else if (totalScore >= 30) {
+                comment = '優秀な聖遺物';
+                grade = 'A';
+                gradeClass = 'grade-A';
+                commentClass = '';
+            } else if (totalScore >= 20) {
+                comment = '平均的な聖遺物';
+                grade = 'B';
+                gradeClass = 'grade-B';
+                commentClass = '';
+            } else if (totalScore >= 10) {
+                comment = 'あんまりな聖遺物';
+                grade = 'C';
+                gradeClass = 'grade-C';
+                commentClass = '';
+            } else {
+                comment = 'ゴミカス聖遺物';
+                grade = 'D';
+                gradeClass = 'grade-D';
+                commentClass = '';
+            }
+            document.getElementById('result').innerHTML =
+                `総合スコア: <b class="${gradeClass}">${totalScore.toFixed(1)}</b> (評価: <span class="${gradeClass}">${grade}</span>)<br>`
+                + `コメント: <span class="${commentClass}">${comment}</span><br>`
+                + `メインステータス: <span class="${mainClass}">${mainEvaluation}</span>`;
+            let detailsHtml = '<h3>詳細評価</h3>';
+            detailsHtml += `<p>メインステータススコア: ${mainScore.toFixed(1)}</p>`;
+            detailsHtml += `<p>サブステータススコア: ${subScore.toFixed(1)}</p>`;
+
+            if (subDetails.length > 0) {
+                detailsHtml += '<h4>サブステータス内訳（評価対象のみ）:</h4><ul>';
+                subDetails.forEach(detail => {
+                    detailsHtml += `<li>${detail.name}: ${detail.value} → ${detail.score.toFixed(1)}点</li>`;
+                });
+                detailsHtml += '</ul>';
+            } else {
+                detailsHtml += '<p>評価対象のサブステータスがありません</p>';
+            }
+
+            document.getElementById('details').innerHTML = detailsHtml;
+        }
+        window.onload = calculateScore;
+    </script>
+</body>
+
+</html>
