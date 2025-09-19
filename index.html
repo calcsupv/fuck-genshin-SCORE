@@ -75,7 +75,7 @@
 <body>
     <h1>聖遺物スコア計算ツール</h1>
 
-    <label>キャラタイプ:
+    <!--<label>キャラタイプ:
         <select id="type">
             <option value="crit" selected>会心率/ダメージ型</option>
             <option value="charge">元素チャージ効率型</option>
@@ -85,7 +85,7 @@
         </select>
     </label>
     <br><br>
-
+-->
     <h3>メインステータス</h3>
     <label>部位:
         <select id="mainSlot">
@@ -117,6 +117,7 @@
     <br><br>
 
     <label>メインステータス値: <input type="number" id="mainValue" value="46.6" step="0.1"></label>
+
     <br><br>
 
     <h3>サブステータス (最大4個まで)</h3>
@@ -255,7 +256,8 @@
         };
 
         function calculateScore() {
-            const type = document.getElementById('type').value;
+            // const type = document.getElementById('type').value;
+            const type = 'crit';
             const slot = document.getElementById('mainSlot').value;
             const mainStatType = document.getElementById('mainStatType').value;
             let mainValue = parseFloat(document.getElementById('mainValue').value);
@@ -479,10 +481,10 @@
             document.getElementById('result').innerHTML =
                 `総合スコア: <b class="${gradeClass}">${totalScore.toFixed(1)}</b> (評価: <span class="${gradeClass}">${grade}</span>)<br>`
                 + `コメント: <span class="${commentClass}">${comment}</span><br>`
-                + `メインステータス: <span class="${mainClass}">${mainEvaluation}</span>`;
+               // + `メインステータス: <span class="${mainClass}">${mainEvaluation}</span>`;
             let detailsHtml = '<h3>詳細評価</h3>';
-            detailsHtml += `<p>メインステータススコア: ${mainScore.toFixed(1)}</p>`;
-            detailsHtml += `<p>サブステータススコア: ${subScore.toFixed(1)}</p>`;
+           // detailsHtml += `<p>メインステータススコア: ${mainScore.toFixed(1)}</p>`;
+            detailsHtml += `<p>サブスコア: ${subScore.toFixed(1)}</p>`;
 
             if (subDetails.length > 0) {
                 detailsHtml += '<h4>サブステータス内訳（評価対象のみ）:</h4><ul>';
@@ -496,7 +498,7 @@
 
             document.getElementById('details').innerHTML = detailsHtml;
         }
-        window.onload = calculateScore;
+        // window.onload = calculateScore;
     </script>
 </body>
 
