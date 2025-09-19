@@ -439,13 +439,19 @@
                 grade = 'SS';
                 gradeClass = 'rainbow';
                 commentClass = 'busu-message';
+            }
+            else if (totalScore >= 60) {
+                comment = 'まずい（運営に通報レベル）';
+                grade = 'SS';
+                gradeClass = 'rainbow';
+                commentClass = '';
             } else if (totalScore >= 50) {
-                comment = '神GOD聖遺物（自慢レベル）';
+                comment = '神GOD聖遺物（自慢やばいレベル）';
                 grade = 'SS';
                 gradeClass = 'rainbow';
                 commentClass = '';
             } else if (totalScore >= 40) {
-                comment = '超優秀（絶対に手放すな）';
+                comment = '超優秀（手放すな）';
                 grade = 'S';
                 gradeClass = 'grade-S';
                 commentClass = '';
